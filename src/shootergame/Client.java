@@ -1,21 +1,19 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+Cliente reproduz tudo e exibe na tela (engine do jogo)
+* Recebe informações do servidor e mostra na tela
+* Envia comandos de ações dentro do jogo
  */
 package shootergame;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 
-/**
- *
- * @author Everton
- */
 public class Client extends javax.swing.JFrame {
 
     TCPCommunication tcpCom;
     String targetIP;
+    Maze maze;
+    String response;
 
     public Client() {
         initComponents();
@@ -23,6 +21,8 @@ public class Client extends javax.swing.JFrame {
         MainPnl.requestFocus();
         targetIP = "192.168.0.9";
         this.tcpCom = new TCPCommunication(targetIP);
+        this.maze = new Maze(); // já roda a Thread da classe Maze
+        response = ""; //variável para receber a resposta do servidor
     }
 
     /**
@@ -159,7 +159,8 @@ public class Client extends javax.swing.JFrame {
 
     private void btnWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWActionPerformed
         try {
-            tcpCom.sendCommand(comboPlayer.getSelectedItem() + "W");
+            response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "W");
+            handleResponse(response);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -168,7 +169,8 @@ public class Client extends javax.swing.JFrame {
 
     private void btnAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAActionPerformed
         try {
-            tcpCom.sendCommand(comboPlayer.getSelectedItem() + "A");
+            response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "A");
+            handleResponse(response);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -176,7 +178,8 @@ public class Client extends javax.swing.JFrame {
 
     private void btnSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSActionPerformed
         try {
-            tcpCom.sendCommand(comboPlayer.getSelectedItem() + "S");
+            response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "S");
+            handleResponse(response);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -184,7 +187,8 @@ public class Client extends javax.swing.JFrame {
 
     private void btnDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDActionPerformed
         try {
-            tcpCom.sendCommand(comboPlayer.getSelectedItem() + "D");
+            response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "D");
+            handleResponse(response);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -194,16 +198,20 @@ public class Client extends javax.swing.JFrame {
 
         try {
             if (evt.getKeyCode() == KeyEvent.VK_W) {
-                tcpCom.sendCommand(comboPlayer.getSelectedItem() + "W");
+                response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "W");
+                handleResponse(response);
             } else if (evt.getKeyCode() == KeyEvent.VK_A) {
-                tcpCom.sendCommand(comboPlayer.getSelectedItem() + "A");
+                response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "A");
+                handleResponse(response);
             } else if (evt.getKeyCode() == KeyEvent.VK_S) {
-                tcpCom.sendCommand(comboPlayer.getSelectedItem() + "S");
+                response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "S");
+                handleResponse(response);
             } else if (evt.getKeyCode() == KeyEvent.VK_D) {
-                tcpCom.sendCommand(comboPlayer.getSelectedItem() + "D");
-            }
-            else if (evt.getKeyCode() == KeyEvent.VK_X) { // Atirar!
-                tcpCom.sendCommand(comboPlayer.getSelectedItem() + "");
+                response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "D");
+                handleResponse(response);
+            } else if (evt.getKeyCode() == KeyEvent.VK_X) { // Atirar!
+                response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "X");
+                handleResponse(response);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -219,10 +227,17 @@ public class Client extends javax.swing.JFrame {
     private void btnAtirarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtirarActionPerformed
         try {
             tcpCom.sendCommand(comboPlayer.getSelectedItem() + "X");
+            handleResponse(response);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }//GEN-LAST:event_btnAtirarActionPerformed
+
+    private void handleResponse(String response) {
+        // Imprimir o Maze 1 vez só
+        System.out.println("Opa, recebi");
+        this.maze.printMaze();
+    }
 
     /**
      * @param args the command line arguments
@@ -260,6 +275,7 @@ public class Client extends javax.swing.JFrame {
                 new Client().setVisible(true);
             }
         });
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

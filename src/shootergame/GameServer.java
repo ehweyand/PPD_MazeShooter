@@ -1,7 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ Servidor basicamente valida os comandos e passa para os outros jogadores
+Desafios:
+* Como comunicar entre jogadores
+* Como validar os movimentos
  */
 package shootergame;
 
@@ -19,12 +20,10 @@ import java.net.Socket;
 public class GameServer {
 
     private Socket socket = null;
-    private Maze maze;
 
     public GameServer() {
-        this.maze = new Maze();
     }
-    
+
     private static void handleConnections() throws IOException {
         ServerSocket ss = new ServerSocket(5000);
 
@@ -36,6 +35,7 @@ public class GameServer {
             BufferedReader bf = new BufferedReader(in);
 
             String str = bf.readLine(); // Comando recebido
+            System.out.println(str);
 
             PrintWriter pr = new PrintWriter(s.getOutputStream());
 
