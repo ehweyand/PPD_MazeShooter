@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor-
  */
-package shootergame;
+package client;
+
+import java.util.ArrayList;
 
 public class Maze {
 
@@ -25,7 +27,14 @@ public class Maze {
         {'*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*', '*'}
     };
 
+    ArrayList<Player> players;
+
     public Maze() {
+        this.players = new ArrayList<>();
+    }
+
+    public void addPlayerToGame(Player player) {
+        this.players.add(player);
     }
 
     public void printMaze() {
@@ -43,4 +52,19 @@ public class Maze {
             System.out.println();
         }
     }
+
+    // Recuperação de posições
+    
+    /*
+    public int getPlayerCol(Player player) {
+        for (int i = 0; i < this.maze.length; i++) {
+            for (int j = 0; j < this.maze[0].length; j++) {
+                if (this.maze[i][j] == player.getSymbol()) {
+                    return j;
+                }
+            }
+        }
+        return -1;
+    }
+    */
 }

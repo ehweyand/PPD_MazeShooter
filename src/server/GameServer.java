@@ -4,7 +4,7 @@ Desafios:
 * Como comunicar entre jogadores
 * Como validar os movimentos
  */
-package shootergame;
+package server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,14 +19,10 @@ import java.net.Socket;
  */
 public class GameServer {
 
-    private Socket socket = null;
-
-    public GameServer() {
-    }
-
     private static void handleConnections() throws IOException {
         ServerSocket ss = new ServerSocket(5000);
-
+        Socket socket = null;
+        Maze maze = new Maze();
         while (true) {
 
             Socket s = ss.accept();
@@ -35,7 +31,16 @@ public class GameServer {
             BufferedReader bf = new BufferedReader(in);
 
             String str = bf.readLine(); // Comando recebido
-            System.out.println(str);
+
+            //Quebrando a String
+            String[] quebras = str.split("-");
+
+            // Aglomeração de ifs abaixo
+            if (quebras[1].equals("L")) {
+                // player novo chegando
+                Player player = new Player(quebras[0]);
+                maze.addPlayerToGame(player);
+            }
 
             PrintWriter pr = new PrintWriter(s.getOutputStream());
 

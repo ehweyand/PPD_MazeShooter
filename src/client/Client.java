@@ -2,11 +2,13 @@
 Cliente reproduz tudo e exibe na tela (engine do jogo)
 * Recebe informações do servidor e mostra na tela
 * Envia comandos de ações dentro do jogo
+* Protocolo de comunicação: Nome
  */
-package shootergame;
+package client;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import server.Maze;
 
 public class Client extends javax.swing.JFrame {
 
@@ -14,6 +16,7 @@ public class Client extends javax.swing.JFrame {
     String targetIP;
     Maze maze;
     String response;
+    Player player;
 
     public Client() {
         initComponents();
@@ -23,6 +26,8 @@ public class Client extends javax.swing.JFrame {
         this.tcpCom = new TCPCommunication(targetIP);
         this.maze = new Maze(); // já roda a Thread da classe Maze
         response = ""; //variável para receber a resposta do servidor
+        pnlControls.setVisible(false);
+
     }
 
     /**
@@ -35,13 +40,15 @@ public class Client extends javax.swing.JFrame {
     private void initComponents() {
 
         MainPnl = new javax.swing.JPanel();
-        btnD = new javax.swing.JButton();
-        btnS = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        tfdPlayer = new javax.swing.JTextField();
+        pnlControls = new javax.swing.JPanel();
         btnW = new javax.swing.JButton();
+        btnS = new javax.swing.JButton();
         btnA = new javax.swing.JButton();
-        comboPlayer = new javax.swing.JComboBox<>();
-        jLabel1 = new javax.swing.JLabel();
+        btnD = new javax.swing.JButton();
         btnAtirar = new javax.swing.JButton();
+        btnIniciar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -51,10 +58,13 @@ public class Client extends javax.swing.JFrame {
             }
         });
 
-        btnD.setText("D");
-        btnD.addActionListener(new java.awt.event.ActionListener() {
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel2.setText("Nome do jogador: ");
+
+        btnW.setText("W");
+        btnW.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDActionPerformed(evt);
+                btnWActionPerformed(evt);
             }
         });
 
@@ -65,13 +75,6 @@ public class Client extends javax.swing.JFrame {
             }
         });
 
-        btnW.setText("W");
-        btnW.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnWActionPerformed(evt);
-            }
-        });
-
         btnA.setText("A");
         btnA.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -79,19 +82,65 @@ public class Client extends javax.swing.JFrame {
             }
         });
 
-        comboPlayer.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "A", "B" }));
-        comboPlayer.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                comboPlayerItemStateChanged(evt);
+        btnD.setText("D");
+        btnD.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDActionPerformed(evt);
             }
         });
-
-        jLabel1.setText("Mover Player:");
 
         btnAtirar.setText("ATIRAR! (X)");
         btnAtirar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAtirarActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout pnlControlsLayout = new javax.swing.GroupLayout(pnlControls);
+        pnlControls.setLayout(pnlControlsLayout);
+        pnlControlsLayout.setHorizontalGroup(
+            pnlControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlControlsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnA, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
+                .addGroup(pnlControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnW, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnS, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(pnlControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlControlsLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnD, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlControlsLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
+                        .addComponent(btnAtirar, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(19, 19, 19))))
+        );
+        pnlControlsLayout.setVerticalGroup(
+            pnlControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlControlsLayout.createSequentialGroup()
+                .addGroup(pnlControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlControlsLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btnW, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnS, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlControlsLayout.createSequentialGroup()
+                        .addGap(49, 49, 49)
+                        .addComponent(btnD, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnAtirar, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlControlsLayout.createSequentialGroup()
+                        .addGap(46, 46, 46)
+                        .addComponent(btnA, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(16, Short.MAX_VALUE))
+        );
+
+        btnIniciar.setText("INICIAR JOGO");
+        btnIniciar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIniciarActionPerformed(evt);
             }
         });
 
@@ -103,44 +152,25 @@ public class Client extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(MainPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(MainPnlLayout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(comboPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainPnlLayout.createSequentialGroup()
-                        .addGap(0, 49, Short.MAX_VALUE)
-                        .addComponent(btnA, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(MainPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(MainPnlLayout.createSequentialGroup()
-                                .addComponent(btnS, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnD, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(btnW, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(41, 41, 41))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, MainPnlLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnAtirar, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(127, 127, 127))
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(MainPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnIniciar, javax.swing.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
+                            .addComponent(tfdPlayer)))
+                    .addComponent(pnlControls, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         MainPnlLayout.setVerticalGroup(
             MainPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(MainPnlLayout.createSequentialGroup()
-                .addGap(37, 37, 37)
+                .addGap(17, 17, 17)
                 .addGroup(MainPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(comboPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29)
-                .addComponent(btnW, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
+                    .addComponent(tfdPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(MainPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnD, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(MainPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnS, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnA, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addComponent(btnAtirar, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addComponent(btnIniciar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
+                .addComponent(pnlControls, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -151,7 +181,9 @@ public class Client extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(MainPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(MainPnl, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(42, Short.MAX_VALUE))
         );
 
         pack();
@@ -159,7 +191,7 @@ public class Client extends javax.swing.JFrame {
 
     private void btnWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWActionPerformed
         try {
-            response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "W");
+            response = tcpCom.sendCommand(this.player.getName() + "-" + "W");
             handleResponse(response);
         } catch (IOException e) {
             e.printStackTrace();
@@ -169,7 +201,7 @@ public class Client extends javax.swing.JFrame {
 
     private void btnAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAActionPerformed
         try {
-            response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "A");
+            response = tcpCom.sendCommand(this.player.getName() + "-" + "A");
             handleResponse(response);
         } catch (IOException e) {
             e.printStackTrace();
@@ -178,7 +210,7 @@ public class Client extends javax.swing.JFrame {
 
     private void btnSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSActionPerformed
         try {
-            response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "S");
+            response = tcpCom.sendCommand(this.player.getName() + "-" + "S");
             handleResponse(response);
         } catch (IOException e) {
             e.printStackTrace();
@@ -187,7 +219,7 @@ public class Client extends javax.swing.JFrame {
 
     private void btnDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDActionPerformed
         try {
-            response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "D");
+            response = tcpCom.sendCommand(this.player.getName() + "-" + "D");
             handleResponse(response);
         } catch (IOException e) {
             e.printStackTrace();
@@ -198,19 +230,19 @@ public class Client extends javax.swing.JFrame {
 
         try {
             if (evt.getKeyCode() == KeyEvent.VK_W) {
-                response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "W");
+                response = tcpCom.sendCommand(this.player.getName() + "-" +  "W");
                 handleResponse(response);
             } else if (evt.getKeyCode() == KeyEvent.VK_A) {
-                response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "A");
+                response = tcpCom.sendCommand(this.player.getName() + "-" + "A");
                 handleResponse(response);
             } else if (evt.getKeyCode() == KeyEvent.VK_S) {
-                response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "S");
+                response = tcpCom.sendCommand(this.player.getName() + "-" + "S");
                 handleResponse(response);
             } else if (evt.getKeyCode() == KeyEvent.VK_D) {
-                response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "D");
+                response = tcpCom.sendCommand(this.player.getName() + "-" + "D");
                 handleResponse(response);
             } else if (evt.getKeyCode() == KeyEvent.VK_X) { // Atirar!
-                response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "X");
+                response = tcpCom.sendCommand(this.player.getName() + "-" + "X");
                 handleResponse(response);
             }
         } catch (IOException e) {
@@ -220,22 +252,42 @@ public class Client extends javax.swing.JFrame {
 
     }//GEN-LAST:event_MainPnlKeyReleased
 
-    private void comboPlayerItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboPlayerItemStateChanged
-        MainPnl.requestFocus();
-    }//GEN-LAST:event_comboPlayerItemStateChanged
-
     private void btnAtirarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtirarActionPerformed
         try {
-            tcpCom.sendCommand(comboPlayer.getSelectedItem() + "X");
+            response = tcpCom.sendCommand(this.player.getName() + "-" + "X");
             handleResponse(response);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }//GEN-LAST:event_btnAtirarActionPerformed
 
+    private void btnIniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarActionPerformed
+        if (tfdPlayer.getText().length() == 0) {
+           this.player = new Player("Desconhecido:" + (int) (Math.random() * 30));
+           tfdPlayer.setText(this.player.getName());
+        } else {
+           this.player = new Player(tfdPlayer.getText()); 
+        }
+         
+        System.out.println(this.player.getName() + " entrou no jogo...");
+        pnlControls.setVisible(true);
+        this.btnIniciar.setEnabled(false);
+        this.tfdPlayer.setEnabled(false);
+        
+        //Enviar pro server o nome do jogador pra ele adicionar ao game
+        try {
+            response = tcpCom.sendCommand(this.player.getName() + "-" + "L");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+    }//GEN-LAST:event_btnIniciarActionPerformed
+
     private void handleResponse(String response) {
-        // Imprimir o Maze 1 vez só
-        System.out.println("Opa, recebi");
+        //Servidor irá enviar a posição do jogador de volta para ser setado no lab
+        //Servidor será apenas um "atualizador" que envia as posições pros outros jogadores
+        // o disparo pode ser "atrasado" usando Thread.sleep(2000);
+        // Exibe novamente na tela o labirinto do game
         this.maze.printMaze();
     }
 
@@ -269,6 +321,7 @@ public class Client extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
 
+        // Player configuration
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -283,9 +336,11 @@ public class Client extends javax.swing.JFrame {
     private javax.swing.JButton btnA;
     private javax.swing.JButton btnAtirar;
     private javax.swing.JButton btnD;
+    private javax.swing.JButton btnIniciar;
     private javax.swing.JButton btnS;
     private javax.swing.JButton btnW;
-    private javax.swing.JComboBox<String> comboPlayer;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel pnlControls;
+    private javax.swing.JTextField tfdPlayer;
     // End of variables declaration//GEN-END:variables
 }
