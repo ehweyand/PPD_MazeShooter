@@ -226,7 +226,7 @@ public class Client extends javax.swing.JFrame {
 
     private void btnAtirarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtirarActionPerformed
         try {
-            tcpCom.sendCommand(comboPlayer.getSelectedItem() + "X");
+            response = tcpCom.sendCommand(comboPlayer.getSelectedItem() + "X");
             handleResponse(response);
         } catch (IOException e) {
             e.printStackTrace();
